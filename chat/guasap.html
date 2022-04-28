@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guasap</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+        body {
+            background-color: rgb(125, 125, 125);
+            font-family: 'Roboto', sans-serif;
+        }
+        input {
+            padding: 10px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: blueviolet;
+            color:white;
+        }
+        #mensajes, #formulario {
+            width: 800px;
+            margin:auto;
+        }
+        .mensaje {
+            background-color: white;
+            border-radius: 3px;
+            padding: 5px;
+            margin-top: 10px;
+        }
+        .emisor {
+            color:rgb(131, 180, 32);
+        }
+        .texto {
+            color:black;
+        }
+    </style>
+    <script>
+        function agregar() {
+            let emisor = document.querySelector("#emisor").value;
+            let destinatario = document.querySelector("#destinatario").value;
+            let mensaje = document.querySelector("#mensaje").value;
+            db.ref('/mensajes/').push().set(
+                {
+                    emisor:emisor,
+                    destinatario:destinatario,
+                    mensaje:mensaje
+                }
+            );
+        }
+        function establecerSuscripcion() {
+            var mensajes = db.ref('mensajes/');
+            mensajes.on('value', (snapshot) => {
+                const mensajes = snapshot.val();
+                presentarDatos(mensajes);
+            });
+        }
+        function presentarDatos(mensajes){
+            let divMensajes = document.querySelector("#mensajes");
+            divMensajes.innerHTML="";
+            if (mensajes==null) return;
+            for (const mensaje in mensajes){
+                console.log(mensaje);
+                const emisor = mensajes[mensaje].emisor;
+                const destinatario = mensajes[mensaje].destinatario;
+                const texto = mensajes[mensaje].mensaje;
+                divMensajes.innerHTML+="<div class='mensaje'><div class='emisor'>"+emisor+"("+destinatario+")"+"</div><div class='texto'>"+texto+"</div>";
+            }
+        }
+    </script>
+</head>
+
+<body onload="establecerSuscripcion()">
+    <div id="formulario">
+        <input type="text" id="emisor" placeholder="Emisor">
+        <input type="text" id="destinatario" placeholder="Destinatario">
+        <input type="text" id="mensaje" placeholder="Mensaje"><button onclick="agregar()">Agregar mensaje</button>
+    </div>
+    <div id="mensajes">
+
+    </div>
+
+
+</body>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAMOSf1Dx_swATXwyNnjEQt3_Vgd8F90DE",
+        authDomain: "guasap-ae11b.firebaseapp.com",
+        databaseURL: "https://guasap-ae11b-default-rtdb.europe-west1.firebasedatabase.app/",
+        projectId: "guasap-ae11b",
+        storageBucket: "guasap-ae11b.appspot.com",
+        messagingSenderId: "983481891371",
+        appId: "1:983481891371:web:f6e3f69bc19c538aef086e"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+</script>
+
+</html>
